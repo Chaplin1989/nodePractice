@@ -33,18 +33,7 @@ handler.handleReqRes = (req, res) => {
     }
     //retrieving route name // trimmedpath jei route er songe match korbe sei module ta ekhane chosenHandler e save hoche
     const chosenHandler = routes[trimmedPath] ? routes[trimmedPath] : notFoundHandler; 
-    // ekhane route related module ta execute hoche
-    chosenHandler(requestProperties, (statusCode, payload) => {
-        const responsedStatusCode = typeof statusCode === 'number' ? statusCode : 500;
-        const responsedPayload = typeof payload === 'object' ? payload : {};
-
-        // have to do stringify of returned payload
-        const payloadString = JSON.stringify(responsedPayload);
-
-        // return the final response
-        res.writeHead(responsedStatusCode);
-        res.end(payloadString);
-    })
+    
 
     // it is used for decoding stream or buffer data which is coming through api request body
     const decoder = new StringDecoder('utf-8');
@@ -57,6 +46,20 @@ handler.handleReqRes = (req, res) => {
     req.on('end', () => {
         realData += decoder.end();
         console.log("realData ", realData);
+        // ekhane route related module ta execute hoche
+        chosenHandler(requestProperties, (statusCode, payload) => {
+            const responsedStatusCode = typeof statusCode === 'number' ? statusCode : 500;
+            const responsedPayload = typeof payload === 'object' ? payload : {};
+
+            // have to do stringify of returned payload
+            const payloadString = JSON.stringify(responsedPayload);
+
+            // return the final response
+            res.writeHead(responsedStatusCode);
+            res.end(payloadString);
+        })
+
+        res.end("Hello world")
     })
     // console.log("path ",path);
     // console.log("parsedUrl ",parsedUrl);
